@@ -1,0 +1,20 @@
+@import '../../assets/scss/variables.scss';
+
+footer {
+    background-color: $background;
+    padding-bottom: 100px;
+    padding-top: 57px;
+}
+.footer_title {
+    color: $white;
+}
+.routes {
+    color: #fff;
+}
+.margin {
+    display: flex;
+    gap: 10px;
+}
+.nav {
+    height: auto;
+}

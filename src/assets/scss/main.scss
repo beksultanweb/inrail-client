@@ -1,0 +1,18 @@
+@import './_reset.scss';
+@import './font.scss';
+@import './variables.scss';
+@import './container.scss';
+
+button {
+    background: $button;
+    color: $white;
+    padding: 1px 15px;
+}
+.auth {
+    background: $buttonAuth;
+    color: $white;
+    padding: 1px 15px;
+}
+input, select {
+    padding-left: 13px;
+}
