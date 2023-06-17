@@ -3,9 +3,10 @@ import { useContext } from 'react'
 import { Link } from 'react-router-dom'
 import { useLocation } from 'react-router-dom'
 import s from './style.module.scss'
-
 import { Context } from '../..'
-import logo from '../../assets/icons/main_logo.svg'
+
+import logo from '../../assets/images/Logo_inrail.png'
+
 
 
 interface LocationState {
@@ -25,11 +26,7 @@ const Header = () => {
           <div className='primary'>
             <nav>
                 <Link to={'/'}>
-                  <div className={s.logo}>
-                      INR
-                      <img src={logo} alt="logo" />
-                      IL
-                  </div>
+                <img className={s.logo} src={logo}/>
                 </Link>
                 <div className={s.routes}>Грузоотправителям</div>
                 <div className={s.routes}>Перевозчикам</div>
