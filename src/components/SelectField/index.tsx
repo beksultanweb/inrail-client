@@ -11,20 +11,20 @@ type CustomDropDownProps = {
 
 const SelectField = (props: CustomDropDownProps) => {
     return (
-        <>
-        <label htmlFor={props.label} className={s.label}>{props.label}</label>
-        <select
-            name={props.name}
-            onChange={props.changeHandler}
-            value={props.currentValue}
-        >
-            {props.values.map(option => (
-                <option key={option.value} value={option.value}>
-                    {option.label}
-                </option>
-            ))}
-        </select>
-        </>
+        <label htmlFor={props.label} className={s.label}>{props.label}
+            <select
+                className={s.select}
+                name={props.name}
+                onChange={props.changeHandler}
+                value={props.currentValue}
+            >
+                {props.values.map(option => (
+                    <option key={option.value} value={option.value}>
+                        {option.label}
+                    </option>
+                ))}
+            </select>
+        </label>
     );
 }
 

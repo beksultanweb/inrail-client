@@ -1,0 +1,84 @@
+@import "../../assets/scss/variables.scss";
+
+.title {
+    color: $h2;
+    font-size: 24px;
+    margin-bottom: 60px;
+}
+.tab {
+    display: none;
+    margin-top: 100px;
+    margin-bottom: 100px;
+    &_active {
+        display: block;
+    }
+    &__top {
+        display: flex;
+        justify-content: space-between;
+    }
+    &__btn {
+        height: 100%;
+    }
+}
+.navigation {
+    display: flex;
+    gap: 20px;
+    margin-top: 100px;
+}
+.route {
+    cursor: pointer;
+    &_active {
+        background-color: $greybg;
+        padding: 2px 10px;
+    }
+}
+.requests {
+    display: grid;
+    gap: 28px;
+    &__item {
+        background-color: $greybg;
+        padding: 20px 22px;
+        display: grid;
+        grid-template-columns: 1fr max-content;
+    }
+    &__inside {
+        background-color: $greybg_second;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 31px;
+        flex-direction: column;
+        padding: 32px;
+    }
+    &__title {
+        font-size: 24px;
+        font-weight: 600;
+    }
+    &__info {
+        font-size: 22px;
+    }
+    &__creds {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    &__cred {
+        font-size: 18px;
+        flex-basis: 30%;
+    }
+    &__price {
+        font-size: 24px;
+        font-weight: 600;
+        color: $green;
+    }
+    &__btn {
+        background-color: $greybg;
+        color: $primary-black;
+        padding: 15px 80px;
+        &_active {
+            background-color: $accept;
+        }
+    }
+}
+.preview {
+    display: flex;
+}

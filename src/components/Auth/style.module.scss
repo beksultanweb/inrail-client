@@ -1,0 +1,66 @@
+@import "../../assets/scss/variables.scss";
+
+.form {
+    padding: 45px 61px 43px 60px;
+    background-color: #dddee0;
+    width: 30%;
+    margin: 130px auto 130px;
+}
+.title {
+    color: $title;
+    font-size: 26px;
+    text-align: center;
+    margin-bottom: 27px;
+}
+.button {
+    margin-top: 25px;
+    width: 100%;
+    padding: 7px;
+}
+.type {
+    display: flex;
+    gap: 36px;
+}
+.label {
+    font-size: 14px;
+    color: $secondary-black;
+    gap: 6px;
+    display: flex;
+}
+.radio:checked {
+    accent-color: $title;
+}
+.forgot {
+    margin-top: 9px;
+    color: #434343;
+    font-size: 14px;
+}
+.input {
+    width: 100%;
+    margin-bottom: 14px;
+}
+.input:last-child {
+    margin-bottom: 0;
+}
+.paragraph {
+    margin-bottom: 14px;
+}
+.instructions {
+    font-size: 0.75rem;
+    border-radius: 0.5rem;
+    background: red;
+    color: #fff;
+    padding: 0.25rem;
+    position: relative;
+    margin-bottom: 14px;
+}
+
+.instructions > img {
+    margin-right: 0.25rem;
+    display: inline;
+}
+
+.offscreen {
+    position: absolute;
+    left: -9999px;
+}

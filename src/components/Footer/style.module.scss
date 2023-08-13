@@ -1,6 +1,6 @@
 @import '../../assets/scss/variables.scss';
 
-footer {
+.footer {
     background-color: $background;
     padding-bottom: 100px;
     padding-top: 57px;
@@ -17,4 +17,7 @@ footer {
 }
 .nav {
     height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }

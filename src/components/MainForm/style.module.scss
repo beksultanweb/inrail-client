@@ -1,0 +1,33 @@
+@import '../../assets/scss/variables.scss';
+
+.form {
+    width: 100%;
+    background-color: $backgroundAbs;
+    padding: 36px 24px 35px 26px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.form_title {
+    font-size: 26px;
+    color: #fff;
+    font-weight: 700;
+}
+.inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 13px;
+    align-items: flex-end;
+}
+.success {
+    background: green;
+}
+.errmsg {
+    background: red;
+}
+.success, .errmsg {
+    color: $white;
+    margin-bottom: 20px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
