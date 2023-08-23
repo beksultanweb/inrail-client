@@ -3,7 +3,7 @@
 import { observer, inject } from 'mobx-react';
 import { useState, useEffect, FormEvent, FC } from 'react';
 import s from './style.module.scss'
-import axios from 'axios';
+import { isAxiosError } from 'axios';
 import info from '../../assets/icons/info-circle.svg';
 import Image from 'next/image'
 import { useRouter } from 'next/navigation';

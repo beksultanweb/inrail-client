@@ -1,7 +1,7 @@
-export interface CarrierInfo {
+export interface UserInfo {
     userId: number,
     companyName: string,
-    BIN: number,
+    BIN: string,
     contactName: string,
     address: string,
     phone: string

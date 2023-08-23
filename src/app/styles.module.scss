@@ -1,7 +1,9 @@
 @import '../assets/scss/variables.scss';
 
 .main {
-    background: url('../assets/images/bg.jpg') no-repeat 100%;
+    background: url('../assets/images/bg.jpg') no-repeat 100% 100%;
+    background-color: rgba(0, 0, 0, .5);
+    background-size: cover;
     padding-top: 136px;
     padding-bottom: 99px;
 }
@@ -11,8 +13,8 @@
 }
 .main_content {
     display: grid;
-    grid-template-columns: 1fr max-content;
-    gap: 155px;
+    grid-template-columns: min-content max-content;
+    justify-content: space-between;
 }
 
 .button {
@@ -79,4 +81,36 @@
     width: 220px;
     top: 100%;
     left: 0;
+}
+
+@media (max-width: 1041px) {
+    .main_content {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .about_content {
+        flex-wrap: wrap;
+    }
+    .strip {
+        display: none;
+    }
+    .howitworks_circles {
+        flex-direction: column;
+        align-items: start;
+        row-gap: 40px;
+    }
+    .box_content {
+        margin-top: 0;
+        top: 0;
+        left: 120%;
+    }
+    .partners_content {
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 480px) {
+    .main__title {
+        font-size: 28px;
+    }
 }

@@ -3,7 +3,7 @@
 .form {
     padding: 45px 61px 43px 60px;
     background-color: #dddee0;
-    width: 30%;
+    width: 500px;
     margin: 130px auto 130px;
 }
 .title {
@@ -63,4 +63,11 @@
 .offscreen {
     position: absolute;
     left: -9999px;
+}
+
+@media (max-width: 500px) {
+    .form {
+        width: 100%;
+        padding: 45px 20px;
+    }
 }

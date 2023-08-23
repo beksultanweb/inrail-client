@@ -9,8 +9,8 @@ import { departureStations } from "../../mocks/variations"
 import { destinationStations } from "../../mocks/variations"
 import { cargoTypes } from "../../mocks/cargo_types"
 import { wagonTypes } from "../../mocks/wagon_types"
-import CarrierService from "../../services/CarrierService"
-import axios from "axios"
+import CarrierService from "../../services/ShipperService"
+import { isAxiosError } from "axios"
 
 const MainForm = () => {
     const [values, setValues] = useState<Values>({
@@ -31,7 +31,7 @@ const MainForm = () => {
         const response = await CarrierService.createRequest(values)
         setSuccess(true)
       } catch (error) {
-        if(axios.isAxiosError(error) && error.response) {
+        if(isAxiosError(error) && error.response) {
           setErrMsg(error.response.data.message)
         }
         else setErrMsg('Unexpected error')

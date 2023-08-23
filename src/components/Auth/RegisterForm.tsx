@@ -1,9 +1,9 @@
 'use client'
 
-import { observer } from 'mobx-react-lite';
+import { observer, inject } from 'mobx-react';
 import { useState, useEffect, FormEvent, FC } from 'react';
 import s from './style.module.scss'
-import axios from 'axios';
+import { isAxiosError } from 'axios';
 import info from '../../assets/icons/info-circle.svg';
 import Image from 'next/image'
 import { Roles } from '../../types/Roles';
@@ -55,6 +55,7 @@ const RegisterForm: FC<RegisterFormProps> = ({ authStore }) => {
         setCheckRun(true)
         const v1 = EMAIL_REGEX.test(email)
         const v2 = PWD_REGEX.test(password)
+
         if (!v1 || !v2 || isEmpty(roles)) {
             return
         }
@@ -107,13 +108,13 @@ const RegisterForm: FC<RegisterFormProps> = ({ authStore }) => {
             <div className={s.type}>
                 <label className={s.label}><input className={s.radio} onChange={() => handleSetRole({"Shipper": 5150})} type="radio" name='type'/>Грузоотправитель</label>
                 <label className={s.label}><input className={s.radio} onChange={() => handleSetRole({"Carrier": 2120})} type="radio" name='type'/>Перевозчик</label>
-                <p className={isEmpty(roles) && checkRun ? s.instructions : s.offscreen}>
-                    <Image src={info} alt="" />Выберите, в качестве кого вас зарегистрировать
-                </p>
             </div>
+            <p className={isEmpty(roles) && checkRun ? s.instructions : s.offscreen}>
+                <Image src={info} alt="" />Выберите, в качестве кого вас зарегистрировать
+            </p>
             <button className={s.button}>Регистрация</button>
         </form>
     )
 }
 
-export default observer(RegisterForm)
+export default inject('authStore')(observer(RegisterForm))

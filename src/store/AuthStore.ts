@@ -5,7 +5,7 @@ import { IUser } from '../models/response/IUser'
 import AuthService from '../services/AuthService'
 import { Roles } from '../types/Roles'
 import { RequestsResponse } from '../types/RequestsResponse'
-import CarrierService from '../services/CarrierService'
+import CarrierService from '../services/ShipperService'
 
 
 class AuthStore {
@@ -52,6 +52,7 @@ class AuthStore {
 
     async registration(email: string, password: string, roles: Roles) {
         try {
+            console.log(email, password, roles)
             const response = await AuthService.registration(email, password, roles)
             localStorage.setItem('token', response.data.accessToken)
             this.setAuth(true)

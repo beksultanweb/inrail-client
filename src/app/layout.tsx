@@ -9,7 +9,6 @@ import AuthStore from '../store/AuthStore';
 
 import { Provider } from 'mobx-react';
 
-
 export default function RootLayout({
     children
   }: {
@@ -17,6 +16,9 @@ export default function RootLayout({
   }) {
     return (
       <html lang="ru">
+        <head>
+          <link rel="icon" href="/fav_inrail.ico" />
+        </head>
         <body>
           <Provider authStore={AuthStore}>
             <Header />
