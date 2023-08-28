@@ -55,8 +55,8 @@ const LoginForm: FC<LoginFormProps> = ({ authStore }) => {
         if (!v1 || !v2) {
             return
         }
-        await authStore?.login(email, password)
-        router.push('/requests')
+        const login = await authStore?.login(email, password)
+        if(login) router.push('/requests')
     }
 
     const isEmpty = (obj: Object | undefined) => {

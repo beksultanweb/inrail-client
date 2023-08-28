@@ -14,6 +14,9 @@ import ShipperService from "../../services/ShipperService";
 import { isAxiosError } from "axios";
 import UserService from "../../services/UserService";
 import CarrierService from "../../services/CarrierService";
+import { Prices } from "../../types/Prices";
+import CarriersModal from "../../components/CarriersModal";
+import { Carrier } from "../../types/Carrier";
 
 const Requests = ({authStore}: {authStore: typeof AuthStore}) => {
   const [modalOpen, setModalOpen] = useState(false)
@@ -29,7 +32,13 @@ const Requests = ({authStore}: {authStore: typeof AuthStore}) => {
   const [logo, setLogo] = useState<File | Blob | null>(null)
   const [requests, setRequests] = useState<RequestsResponse[]>([])
   const [success, setSuccess] = useState(false)
+  const [fetchCarrierInfo, setFetchCarrierInfo] = useState(false)
   const [errMsg, setErrMsg] = useState('')
+  const [hidePriceInput, setHidePriceInput] = useState('')
+  const [price, setPrice] = useState('')
+  const [currentPrice, setCurrentPrice] = useState<Prices[]>([])
+  const [carriersOpen, setCarriersOpen] = useState(false)
+  const [carriers, setCarriers] = useState<Carrier[]>([])
   const handleModalOpen = () => {
     setModalOpen(!modalOpen)
   }
@@ -53,7 +62,38 @@ const Requests = ({authStore}: {authStore: typeof AuthStore}) => {
       }
     }
     fetchData()
-  }, [!modalOpen])
+  }, [!modalOpen, !carriersOpen])
+
+  const handleShowCarrier = (carrier: string) => {
+    setFetchCarrierInfo(true)
+    setTabActive(0)
+    const fetchData = async () => {
+      try {
+        const {data} = await UserService.getUserLogo(carrier)
+        const file = new File([data], 'logo.jpg', {type: 'image/jpeg'})
+        setLogo(file)
+      } catch (error) {
+          if(error instanceof Error) {
+              console.log(error.message)
+          }
+          else console.log('Unexpected error', error)
+      }
+    }
+    const fetchData2 = async () => {
+      try {
+        const { data } = await UserService.getUserInfo(carrier)
+
+        setValues(data)
+      } catch (error) {
+          if(error instanceof Error) {
+              console.log(error.message)
+          }
+          else console.log('Unexpected error', error)
+      }
+    }
+    fetchData()
+    fetchData2()
+  }
 
   useEffect(() => {
     if(tabActive === 2 || tabActive === 0) {
@@ -81,8 +121,24 @@ const Requests = ({authStore}: {authStore: typeof AuthStore}) => {
             else console.log('Unexpected error', error)
         }
       }
-      fetchData()
-      fetchData2()
+      if(!fetchCarrierInfo) {
+        fetchData()
+        fetchData2()
+      }
+    }
+    if(tabActive === 1) {
+      const fetchPrices = async () => {
+        try {
+          const { data } = await CarrierService.getMyPrices(authStore.user.id)
+          setCurrentPrice(data)
+        } catch (error) {
+          if(error instanceof Error) {
+            console.log(error.message)
+          }
+          else console.log('Unexpected error', error)
+        }
+      }
+      fetchPrices()
     }
     else {
       setSuccess(false)
@@ -90,7 +146,45 @@ const Requests = ({authStore}: {authStore: typeof AuthStore}) => {
     }
   }, [tabActive])
 
-  const handleChange = (event : React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handlePrice = (event: ChangeEvent<HTMLInputElement>) => {
+    setPrice(event.target.value)
+  }
+
+  const handleGetReqPrices = async (requestId: string) => {
+    try {
+      const {data} = await ShipperService.getPrices(requestId)
+      setCarriersOpen(true)
+      setCarriers(data)
+    } catch (error) {
+      
+    }
+  }
+
+  const handleSubmitPrice = async (requestId: string) => {
+    if(hidePriceInput !== '' && price !== '') {
+      try {
+        const {data} = await CarrierService.setPrice(authStore.user.id, requestId, price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " "))
+        const updatedCurrentPrice = currentPrice.map(price =>
+          price.request === data.request ? { ...price, price: data.price } : price)
+        setCurrentPrice(updatedCurrentPrice)
+        setHidePriceInput('')
+      } catch (error) {
+        if(isAxiosError(error) && error.response) {
+          setErrMsg(error.response.data.message)
+          setSuccess(false)
+        }
+        else setErrMsg('Unexpected error')
+      }
+    }
+    else setHidePriceInput(requestId)
+  }
+
+  const handleChangeActiveTab = (num: number) => {
+    setFetchCarrierInfo(false)
+    setTabActive(num)
+  }
+
+  const handleChange = (event : ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setValues({ ...values, [event.target.name] : event.target.value });
   }
 
@@ -132,9 +226,9 @@ const Requests = ({authStore}: {authStore: typeof AuthStore}) => {
       <PrivateRoute requiredRoles={[5150, 2120]}>
         <div className="primary">
           <div className={s.navigation}>
-            <div onClick={() => setTabActive(0)} className={`${tabActive === 0 && s.route_active} ${s.route}`}>Профайл</div>
-            <div onClick={() => setTabActive(1)} className={`${tabActive === 1 && s.route_active} ${s.route}`}>Заявки</div>
-            <div onClick={() => setTabActive(2)} className={`${tabActive === 2 && s.route_active} ${s.route}`}>Настройки</div>
+            <div onClick={() => handleChangeActiveTab(0)} className={`${tabActive === 0 && s.route_active} ${s.route}`}>{fetchCarrierInfo ? 'Профиль перевозчика' : 'Профайл'}</div>
+            <div onClick={() => handleChangeActiveTab(1)} className={`${tabActive === 1 && s.route_active} ${s.route}`}>Заявки</div>
+            <div onClick={() => handleChangeActiveTab(2)} className={`${tabActive === 2 && s.route_active} ${s.route}`}>Настройки</div>
           </div>
           <div className={`${s.tab} ${tabActive === 0 && s.tab_active}`}>
             <div className={s.profile}>
@@ -170,7 +264,7 @@ const Requests = ({authStore}: {authStore: typeof AuthStore}) => {
               {authStore.user.roles?.find(role => role === 5150) && <button onClick={handleModalOpen} className={s.tab__btn}>Добавить заявку</button>}
             </div>
             <div className={s.requests}>
-              {requests.map(request => {
+              {requests.map((request, id) => {
                 const date = moment(request.date).format('DD.MM.YYYY hh:mm')
                 return (
                   <div className={s.requests__item}>
@@ -187,9 +281,11 @@ const Requests = ({authStore}: {authStore: typeof AuthStore}) => {
                   </div>
                 </div>
                 <div className={s.requests__inside}>
-                  <div className={s.requests__price}>Стоимость: ХХХХХХ тг</div>
-                  {authStore.user.roles?.find(role => role === 5150) ? <button className={s.requests__btn}>Выбрать перевозчика</button> :
-                  <button className={s.requests__btn_active}>Предложить свою цену</button>}
+                  {hidePriceInput !== request._id ? <div className={s.requests__price}>Стоимость: {currentPrice[id]?.request === request._id ? currentPrice[id].price : 'XXXXXXX'} тг</div> :
+                  <InputField value={price} type="number" style="first" name="price" placeholder="Введите цену в тенге..." changeHandler={handlePrice} />}
+                  {authStore.user.roles?.find(role => role === 5150) ? <button onClick={() => handleGetReqPrices(request._id)} className={`${request.carrier ? s.requests__btn_active : s.requests__btn}`}>{request.carrier ? 'Изменить перевозчика' : 'Выбрать перевозчика'}</button> :
+                  <button onClick={() => handleSubmitPrice(request._id)} className={s.requests__btn_active}>{!currentPrice ? 'Предложить свою цену': 'Изменить свою цену'}</button>}
+                  {request.carrier && <button onClick={() => handleShowCarrier(request.carrier)} className={s.requests__btn}>Перейти к профилю</button>}
                 </div>
               </div>
                 )}
@@ -212,6 +308,7 @@ const Requests = ({authStore}: {authStore: typeof AuthStore}) => {
           </div>
       </div>
       {modalOpen && <Modal close={() => setModalOpen(false)}/>}
+      {carriersOpen && <CarriersModal carriers={carriers} close={() => setCarriersOpen(false)} />}
       </PrivateRoute>
     );
 };

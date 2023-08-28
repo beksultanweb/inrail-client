@@ -9,5 +9,6 @@ export interface RequestsResponse {
     wagon_numbers: number,
     cargo_type: string,
     wagon_type: string
+    carrier?: string
 }
 

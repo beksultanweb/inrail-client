@@ -3,7 +3,8 @@ import s from './style.module.scss'
 
 type CustomTextFieldProps = {
     type: string,
-    label: string,
+    label?: string,
+    placeholder?: string,
     name: string,
     style: string,
     changeHandler: (event: React.ChangeEvent<HTMLInputElement>) => void,
@@ -18,7 +19,7 @@ const InputField = (props: CustomTextFieldProps) => {
     }, [props.logo])
     return (
         <div className={`${props.style === 'first' ? s.box : s.box_secondary }`}>
-            <label htmlFor={props.label} className={`${props.style === 'first' ? s.label : s.label_secondary }`} dangerouslySetInnerHTML={{ __html: props.label }}></label>
+            {props.label && <label htmlFor={props.label} className={`${props.style === 'first' ? s.label : s.label_secondary }`} dangerouslySetInnerHTML={{ __html: props.label }}></label>}
             <div className={`${props.type === 'file' && s.input_file_box}`}>
                 <input
                     value={props.value}
@@ -26,6 +27,7 @@ const InputField = (props: CustomTextFieldProps) => {
                     type={props.type}
                     id={props.label}
                     name={props.name}
+                    placeholder={props.placeholder}
                     onChange={props.changeHandler}
                     required={props.required}
                 />

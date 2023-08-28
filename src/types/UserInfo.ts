@@ -1,5 +1,5 @@
 export interface UserInfo {
-    userId: number,
+    userId: string,
     companyName: string,
     BIN: string,
     contactName: string,

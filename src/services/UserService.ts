@@ -7,10 +7,10 @@ export default class UserService {
     static async setUserInfo(formData: FormData): Promise<AxiosResponse> {
         return $api.post('/User-info', formData)
     }
-    static async getUserLogo(userId: number): Promise<AxiosResponse> {
+    static async getUserLogo(userId: string): Promise<AxiosResponse> {
         return $api.get(`/getmylogo/${userId}`, {responseType: 'blob'})
     }
-    static async getUserInfo(userId: number): Promise<AxiosResponse> {
+    static async getUserInfo(userId: string): Promise<AxiosResponse> {
         return $api.get(`/getmyinfo/${userId}`)
     }
 }
