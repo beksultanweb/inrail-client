@@ -58,7 +58,7 @@ const MainForm = () => {
               <SelectField label='Тип вагона' name='wagon_type' values={wagonTypes} currentValue={values.wagon_type} changeHandler={handleChange}/>
             </div>
             <InputField type='number' style="first" name='wagon_numbers' label='Количество вагонов' changeHandler={handleChange}/>
-            <button type={'submit'} className={s.button}>Отправить заявку</button>
+            <button style={{height: '50px'}} type={'submit'} className={s.button}>Отправить заявку</button>
         </form>
     )
 }

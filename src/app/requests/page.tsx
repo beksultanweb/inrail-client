@@ -17,6 +17,7 @@ import CarrierService from "../../services/CarrierService";
 import { Prices } from "../../types/Prices";
 import CarriersModal from "../../components/CarriersModal";
 import { Carrier } from "../../types/Carrier";
+import 'moment/locale/ru'
 
 const Requests = ({authStore}: {authStore: typeof AuthStore}) => {
   const [modalOpen, setModalOpen] = useState(false)
@@ -39,6 +40,7 @@ const Requests = ({authStore}: {authStore: typeof AuthStore}) => {
   const [currentPrice, setCurrentPrice] = useState<Prices[]>([])
   const [carriersOpen, setCarriersOpen] = useState(false)
   const [carriers, setCarriers] = useState<Carrier[]>([])
+  const [unsubmitedPrice, setUnsubmitedPrice] = useState('')
   const handleModalOpen = () => {
     setModalOpen(!modalOpen)
   }
@@ -64,12 +66,12 @@ const Requests = ({authStore}: {authStore: typeof AuthStore}) => {
     fetchData()
   }, [!modalOpen, !carriersOpen])
 
-  const handleShowCarrier = (carrier: string) => {
+  const handleShowAuthor = (author: string) => {
     setFetchCarrierInfo(true)
     setTabActive(null)
     const fetchData = async () => {
       try {
-        const {data} = await UserService.getUserLogo(carrier)
+        const {data} = await UserService.getUserLogo(author)
         const file = new File([data], 'logo.jpg', {type: 'image/jpeg'})
         setLogo(file)
       } catch (error) {
@@ -81,7 +83,7 @@ const Requests = ({authStore}: {authStore: typeof AuthStore}) => {
     }
     const fetchData2 = async () => {
       try {
-        const { data } = await UserService.getUserInfo(carrier)
+        const { data } = await UserService.getUserInfo(author)
 
         setValues(data)
       } catch (error) {
@@ -144,7 +146,7 @@ const Requests = ({authStore}: {authStore: typeof AuthStore}) => {
       setSuccess(false)
       setErrMsg('')
     }
-  }, [tabActive])
+  }, [tabActive, hidePriceInput === ''])
 
   const handlePrice = (event: ChangeEvent<HTMLInputElement>) => {
     setPrice(event.target.value)
@@ -163,17 +165,19 @@ const Requests = ({authStore}: {authStore: typeof AuthStore}) => {
   const handleSubmitPrice = async (requestId: string) => {
     if(hidePriceInput !== '' && price !== '') {
       try {
-        const {data} = await CarrierService.setPrice(authStore.user.id, requestId, price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " "))
-        const updatedCurrentPrice = currentPrice.map(price =>
-          price.request === data.request ? { ...price, price: data.price } : price)
-        setCurrentPrice(updatedCurrentPrice)
-        setHidePriceInput('')
+        const {data} = await UserService.getUserInfo(authStore.user.id)
+        if(data) {
+          const {data} = await CarrierService.setPrice(authStore.user.id, requestId, price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " "))
+          const updatedCurrentPrice = currentPrice.map(price =>
+            price.request === data.request ? { ...price, price: data.price } : price)
+          setCurrentPrice(updatedCurrentPrice)
+          setHidePriceInput('')
+        }
       } catch (error) {
         if(isAxiosError(error) && error.response) {
-          setErrMsg(error.response.data.message)
+          setUnsubmitedPrice(error.response.data.message)
           setSuccess(false)
         }
-        else setErrMsg('Unexpected error')
       }
     }
     else setHidePriceInput(requestId)
@@ -229,12 +233,13 @@ const Requests = ({authStore}: {authStore: typeof AuthStore}) => {
             <div onClick={() => handleChangeActiveTab(0)} className={`${tabActive === 0 && s.route_active} ${s.route}`}>Профайл</div>
             <div onClick={() => handleChangeActiveTab(1)} className={`${tabActive === 1 && s.route_active} ${s.route}`}>Заявки</div>
             <div onClick={() => handleChangeActiveTab(2)} className={`${tabActive === 2 && s.route_active} ${s.route}`}>Настройки</div>
-            {fetchCarrierInfo && <div className={`${fetchCarrierInfo && s.route_active} ${s.route}`}>Профайл перевозчика</div>}
+            {fetchCarrierInfo && <div className={`${fetchCarrierInfo && s.route_active} ${s.route}`}>Профайл {authStore.user.roles?.find(role => role === 5150) ? 'перевозчика' : 'грузоотправителя'}</div>}
           </div>
-          <div className={`${s.tab} ${tabActive === 0 || fetchCarrierInfo && s.tab_active}`}>
+          <div className={`${s.tab} ${(tabActive === 0 || fetchCarrierInfo) && s.tab_active}`}>
             <div className={s.profile}>
             <div>
-            <h2 className={s.title}>Информация о грузоотправителе</h2>
+            <h2 className={s.title}>{fetchCarrierInfo ? `Информация о ${authStore.user.roles?.find(role => role === 5150) ? 'перевозчике': 'грузоотправителе'}` : `Информация о ${authStore.user.roles?.find(role => role === 5150) ? 'грузоотправителе' : 'перевозчике'}`}</h2>
+            {!values.address && !values.BIN && !values.companyName && <div className={s.profile__info} style={{color: 'red', display: 'block'}}>Заполните профайл в разделе "Настройки"!</div>}
             <div className={s.profile__info}>
               <div>Наименование компании</div>
               <div className={s.profile__companyname}>{values.companyName}</div>
@@ -265,12 +270,12 @@ const Requests = ({authStore}: {authStore: typeof AuthStore}) => {
               {authStore.user.roles?.find(role => role === 5150) && <button onClick={handleModalOpen} className={s.tab__btn}>Добавить заявку</button>}
             </div>
             <div className={s.requests}>
-              {requests.map((request, id) => {
-                const date = moment(request.date).format('DD.MM.YYYY hh:mm')
+              {requests.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).map((request, id) => {
+                const date = moment(request.date).format('lll')
                 return (
                   <div className={s.requests__item}>
                 <div>
-                  <h3 className={s.requests__title}>Заказ #{request._id.slice(request._id.length / 2, request._id.length)} от {date}</h3>
+                  <h3 className={s.requests__title}>Заказ №{request.counter} от {date}</h3>
                   <p className={s.requests__info}>Маршрут: {request.departure} - {request.destination}</p>
                   <p className={s.requests__info}>Конечная точка: {request.destination}</p>
                   <div className={s.requests__creds}>
@@ -282,11 +287,14 @@ const Requests = ({authStore}: {authStore: typeof AuthStore}) => {
                   </div>
                 </div>
                 <div className={s.requests__inside}>
-                  {hidePriceInput !== request._id ? <div className={s.requests__price}>Стоимость: {currentPrice[id]?.request === request._id ? currentPrice[id].price : request.price ? request.price : 'XXXXXXX'} тг</div> :
-                  <InputField value={price} type="number" style="first" name="price" placeholder="Введите цену в тенге..." changeHandler={handlePrice} />}
+                  {authStore.user.roles?.find(role => role === 5150) ? <div className={s.requests__price}>Стоимость: {request.price ? request.price : 'XXXXXXX'} тг</div> :
+                  <div className={s.requests__price}>{currentPrice[id]?.request === request._id ? currentPrice[id].price.toString() + ' тг' : 'Укажите свою цену'}</div>}
+                  {hidePriceInput === request._id && <InputField value={price} type="number" style="first" name="price" placeholder="Введите цену в тенге..." changeHandler={handlePrice} />}
+                  {hidePriceInput === request._id && unsubmitedPrice && <div style={{color: 'red'}}>{unsubmitedPrice}</div>}
                   {authStore.user.roles?.find(role => role === 5150) ? <button onClick={() => handleGetReqPrices(request._id)} className={`${request.carrier ? s.requests__btn_active : s.requests__btn}`}>{request.carrier ? 'Изменить перевозчика' : 'Выбрать перевозчика'}</button> :
-                  <button onClick={() => handleSubmitPrice(request._id)} className={s.requests__btn_active}>{!currentPrice ? 'Предложить свою цену': 'Изменить свою цену'}</button>}
-                  {request.carrier && <button onClick={() => handleShowCarrier(request.carrier)} className={s.requests__btn}>Перейти к профилю</button>}
+                  <button onClick={() => handleSubmitPrice(request._id)} className={`${currentPrice[id]?.price ? s.requests__btn_active : s.requests__btn}`}>{currentPrice[id]?.request === request._id ? 'Изменить свою цену' : 'Предложить свою цену'}</button>}
+                  {request.carrier && authStore.user.roles?.find(role => role === 5150) && <button onClick={() => request.carrier && handleShowAuthor(request.carrier)} className={s.requests__btn}>Перейти к профилю</button>}
+                  {request.carrier === authStore.user.id && <div>Вас выбрали в качестве перевозчика, <div onClick={() => handleShowAuthor(request.user)} style={{textDecoration: 'underline', cursor: 'pointer'}} >перейти к профилю грузоотправителя</div></div>}
                 </div>
               </div>
                 )}

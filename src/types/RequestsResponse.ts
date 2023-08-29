@@ -1,5 +1,6 @@
 export interface RequestsResponse {
     _id: string
+    counter: number
     user: string
     departure: string,
     destination: string,
