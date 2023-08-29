@@ -14,7 +14,7 @@ export default class ShipperService {
     static async getPrices(requestId: string): Promise<AxiosResponse<Carrier[]>> {
         return $api.get<Carrier[]>(`/getprices/${requestId}`)
     }
-    static async setChooseCarrier(requestId: string, userId: string): Promise<AxiosResponse> {
-        return $api.post('/choosecarrier', {requestId, userId})
+    static async setChooseCarrier(requestId: string, price: string, userId: string): Promise<AxiosResponse> {
+        return $api.post('/choosecarrier', {requestId, price, userId})
     }
 }

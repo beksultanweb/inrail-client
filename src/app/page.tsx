@@ -41,7 +41,7 @@ const Home = () => {
           проделать весь долгий путь до клиента с помощью
           разных видов транспорта: железнодорожного, морского,
           автомобильного или речного.</p>
-          <Image src={about} alt="about" />
+          <Image src={about} layout='responsive' alt="about" />
         </div>
       </div>
     </section>

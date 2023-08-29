@@ -8,7 +8,8 @@ export interface RequestsResponse {
     capacity: number,
     wagon_numbers: number,
     cargo_type: string,
-    wagon_type: string
-    carrier?: string
+    wagon_type: string,
+    carrier?: string,
+    price?: string
 }
 

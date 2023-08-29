@@ -31,9 +31,9 @@ const CarriersModal = ({carriers, close}: {carriers: Carrier[], close: () => voi
             }
         }
     }
-    const handleChooseCarrier = async (request: string, user: string) => {
+    const handleChooseCarrier = async (request: string, price: string, user: string) => {
         try {
-            const {data} = await ShipperService.setChooseCarrier(request, user)
+            const {data} = await ShipperService.setChooseCarrier(request, price, user)
             alert(data.message)
         } catch (error) {
             
@@ -61,7 +61,7 @@ const CarriersModal = ({carriers, close}: {carriers: Carrier[], close: () => voi
                                 <div>Контактное лицо: {values?.contactName}</div>
                                 <div>Телефон: {values?.phone}</div>
                                 {values?.companyName === carrier.companyName &&
-                                <button onClick={() => handleChooseCarrier(carrier.request, carrier.user)}>Выбрать перевозчика</button>}
+                                <button onClick={() => handleChooseCarrier(carrier.request, carrier.price, carrier.user)}>Выбрать перевозчика</button>}
                             </div>}
                         </div>
                     ))}

@@ -20,7 +20,7 @@ import { Carrier } from "../../types/Carrier";
 
 const Requests = ({authStore}: {authStore: typeof AuthStore}) => {
   const [modalOpen, setModalOpen] = useState(false)
-  const [tabActive, setTabActive] = useState(1)
+  const [tabActive, setTabActive] = useState<number | null>(1)
   const [values, setValues] = useState<UserInfo>({
     userId: authStore.user.id,
     companyName: '',
@@ -66,7 +66,7 @@ const Requests = ({authStore}: {authStore: typeof AuthStore}) => {
 
   const handleShowCarrier = (carrier: string) => {
     setFetchCarrierInfo(true)
-    setTabActive(0)
+    setTabActive(null)
     const fetchData = async () => {
       try {
         const {data} = await UserService.getUserLogo(carrier)
@@ -226,11 +226,12 @@ const Requests = ({authStore}: {authStore: typeof AuthStore}) => {
       <PrivateRoute requiredRoles={[5150, 2120]}>
         <div className="primary">
           <div className={s.navigation}>
-            <div onClick={() => handleChangeActiveTab(0)} className={`${tabActive === 0 && s.route_active} ${s.route}`}>{fetchCarrierInfo ? 'Профиль перевозчика' : 'Профайл'}</div>
+            <div onClick={() => handleChangeActiveTab(0)} className={`${tabActive === 0 && s.route_active} ${s.route}`}>Профайл</div>
             <div onClick={() => handleChangeActiveTab(1)} className={`${tabActive === 1 && s.route_active} ${s.route}`}>Заявки</div>
             <div onClick={() => handleChangeActiveTab(2)} className={`${tabActive === 2 && s.route_active} ${s.route}`}>Настройки</div>
+            {fetchCarrierInfo && <div className={`${fetchCarrierInfo && s.route_active} ${s.route}`}>Профайл перевозчика</div>}
           </div>
-          <div className={`${s.tab} ${tabActive === 0 && s.tab_active}`}>
+          <div className={`${s.tab} ${tabActive === 0 || fetchCarrierInfo && s.tab_active}`}>
             <div className={s.profile}>
             <div>
             <h2 className={s.title}>Информация о грузоотправителе</h2>
@@ -281,7 +282,7 @@ const Requests = ({authStore}: {authStore: typeof AuthStore}) => {
                   </div>
                 </div>
                 <div className={s.requests__inside}>
-                  {hidePriceInput !== request._id ? <div className={s.requests__price}>Стоимость: {currentPrice[id]?.request === request._id ? currentPrice[id].price : 'XXXXXXX'} тг</div> :
+                  {hidePriceInput !== request._id ? <div className={s.requests__price}>Стоимость: {currentPrice[id]?.request === request._id ? currentPrice[id].price : request.price ? request.price : 'XXXXXXX'} тг</div> :
                   <InputField value={price} type="number" style="first" name="price" placeholder="Введите цену в тенге..." changeHandler={handlePrice} />}
                   {authStore.user.roles?.find(role => role === 5150) ? <button onClick={() => handleGetReqPrices(request._id)} className={`${request.carrier ? s.requests__btn_active : s.requests__btn}`}>{request.carrier ? 'Изменить перевозчика' : 'Выбрать перевозчика'}</button> :
                   <button onClick={() => handleSubmitPrice(request._id)} className={s.requests__btn_active}>{!currentPrice ? 'Предложить свою цену': 'Изменить свою цену'}</button>}
